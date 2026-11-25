@@ -1,0 +1,24 @@
+{
+  "catalog": {
+    "mappings": {
+      "properties": {
+        "sku": {
+          "type": "keyword"
+        },
+        "quantity": {
+          "type": "long"
+        },
+        "tags": {
+          "type": "keyword"
+        },
+        "details": {
+          "properties": {
+            "active": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    }
+  }
+}

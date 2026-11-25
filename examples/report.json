@@ -1,0 +1,40 @@
+{
+  "documents" : 3,
+  "fields" : [ {
+    "path" : "aisle",
+    "observed" : [ "string" ],
+    "target" : null,
+    "findings" : [ "unmapped" ],
+    "suggestion" : null
+  }, {
+    "path" : "details",
+    "observed" : [ "object" ],
+    "target" : "object",
+    "findings" : [ ],
+    "suggestion" : null
+  }, {
+    "path" : "details.active",
+    "observed" : [ "boolean" ],
+    "target" : "boolean",
+    "findings" : [ ],
+    "suggestion" : null
+  }, {
+    "path" : "quantity",
+    "observed" : [ "integer", "null", "string" ],
+    "target" : "long",
+    "findings" : [ "mixed_types", "mapping_conflict" ],
+    "suggestion" : "Validate numeric strings and signed 64-bit range before converting to long."
+  }, {
+    "path" : "sku",
+    "observed" : [ "string" ],
+    "target" : "keyword",
+    "findings" : [ ],
+    "suggestion" : null
+  }, {
+    "path" : "tags",
+    "observed" : [ "empty_array", "string" ],
+    "target" : "keyword",
+    "findings" : [ ],
+    "suggestion" : null
+  } ]
+}

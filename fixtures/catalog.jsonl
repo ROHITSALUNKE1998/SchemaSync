@@ -1,0 +1,3 @@
+{"sku":"DEMO-A","quantity":12,"tags":["sample"],"details":{"active":true}}
+{"sku":"DEMO-B","quantity":"7","tags":[],"details":{"active":false},"aisle":"blue"}
+{"sku":"DEMO-C","quantity":null,"tags":["sample","new"]}

@@ -1,0 +1,62 @@
+services:
+  mongo:
+    image: mongo:7.0
+    volumes:
+      - ./fixtures:/fixtures:ro
+      - demo:/demo
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "quit(db.adminCommand('ping').ok ? 0 : 1)"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+  export:
+    image: mongo:7.0
+    depends_on:
+      mongo:
+        condition: service_healthy
+    volumes:
+      - ./fixtures:/fixtures:ro
+      - demo:/demo
+    entrypoint: ["/bin/sh", "-ec"]
+    command:
+      - |
+        mongoimport --host mongo --db demo --collection catalog --mode upsert --upsertFields sku --file /fixtures/catalog.jsonl
+        mongoexport --host mongo --db demo --collection catalog --out /demo/catalog.jsonl
+  elastic:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.15.5
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: "false"
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:9200"]
+      interval: 5s
+      timeout: 5s
+      retries: 40
+  mapping:
+    image: curlimages/curl:8.11.1
+    user: "0"
+    depends_on:
+      elastic:
+        condition: service_healthy
+    volumes:
+      - ./fixtures:/fixtures:ro
+      - demo:/demo
+    entrypoint: ["/bin/sh", "-ec"]
+    command:
+      - |
+        if ! curl -fsSI http://elastic:9200/catalog >/dev/null; then
+          curl -fsS -X PUT http://elastic:9200/catalog -H 'Content-Type: application/json' --data-binary @/fixtures/index.json
+        fi
+        curl -fsS http://elastic:9200/catalog/_mapping -o /demo/mapping.json
+  audit:
+    build: .
+    depends_on:
+      export:
+        condition: service_completed_successfully
+      mapping:
+        condition: service_completed_successfully
+    volumes:
+      - demo:/demo:ro
+volumes:
+  demo: {}
